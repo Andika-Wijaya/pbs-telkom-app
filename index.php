@@ -1,5 +1,5 @@
 <?php
-
+$action = $_GET['action'] ?? 'login';
 require_once 'controllers/PelangganController.php';
 
 $controller = new PelangganController();
@@ -31,6 +31,18 @@ switch ($action) {
     case 'search':
         $controller->search();
         break;
+
+        case 'login':
+    $controller->login();
+    break;
+
+case 'loginProcess':
+    $controller->loginProcess();
+    break;
+
+case 'logout':
+    $controller->logout();
+    break;
 
     default:
         $controller->index();

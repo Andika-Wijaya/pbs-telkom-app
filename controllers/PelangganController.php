@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../models/User.php';
 
 class PelangganController {
@@ -9,12 +9,18 @@ class PelangganController {
     }
 
     public function dashboard() {
-        $user = new User();
-        $stmt = $user->getAll();
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        include 'views/dashboard.php';
+    // 🔐 CEK LOGIN DI SINI
+    if (!isset($_SESSION['login'])) {
+        header("Location: index.php");
+        exit;
     }
+
+    $user = new User();
+    $data = $user->getAll();
+
+    require "views/dashboard.php";
+}
 
     public function create() {
         $user = new User();
