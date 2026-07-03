@@ -1,16 +1,19 @@
 <?php
-require_once "models/User.php";
+
+require_once __DIR__ . '/../models/User.php';
 
 class PelangganController {
 
     public function index() {
-        require "views/index.php";
+        include 'views/index.php';
     }
 
     public function dashboard() {
         $user = new User();
-        $data = $user->getAll();
-        require "views/dashboard.php";
+        $stmt = $user->getAll();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include 'views/dashboard.php';
     }
 
     public function create() {
@@ -19,7 +22,25 @@ class PelangganController {
         $user->layanan = $_POST['layanan'];
         $user->create();
 
-        echo "success";
+        header("Location: index.php?action=dashboard");
+        exit;
+    }
+
+    public function delete() {
+        $user = new User();
+        $user->id = $_GET['id'];
+        $user->delete();
+
+        header("Location: index.php?action=dashboard");
+        exit;
+    }
+
+    public function edit() {
+        $user = new User();
+        $user->id = $_GET['id'];
+        $data = $user->getById();
+
+        include 'views/edit.php';
     }
 
     public function update() {
@@ -29,6 +50,16 @@ class PelangganController {
         $user->layanan = $_POST['layanan'];
         $user->update();
 
-        echo "success";
+        header("Location: index.php?action=dashboard");
+        exit;
+    }
+
+    public function search() {
+        $user = new User();
+        $keyword = $_GET['keyword'];
+        $stmt = $user->search($keyword);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include 'views/dashboard.php';
     }
 }
