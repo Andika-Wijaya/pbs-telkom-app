@@ -1,11 +1,25 @@
 <?php
+
 class Database {
     private $host = "localhost";
-    private $user = "root";
-    private $pass = "";
-    private $db = "telkom_db";
+    private $db_name = "telkom_db"; // ✅ SESUAIKAN DI SINI
+    private $username = "root";
+    private $password = "";
 
     public function connect() {
-        return new mysqli($this->host, $this->user, $this->pass, $this->db);
+        $conn = null;
+
+        try {
+            $conn = new PDO(
+                "mysql:host=$this->host;dbname=$this->db_name",
+                $this->username,
+                $this->password
+            );
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            echo "Koneksi gagal: " . $e->getMessage();
+        }
+
+        return $conn;
     }
 }

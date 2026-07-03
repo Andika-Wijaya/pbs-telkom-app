@@ -7,6 +7,7 @@ $controller = new PelangganController();
 $action = $_GET['action'] ?? 'index';
 
 switch ($action) {
+
     case 'dashboard':
         $controller->dashboard();
         break;
@@ -21,6 +22,14 @@ switch ($action) {
 
     case 'delete':
         $controller->delete();
+        break;
+
+    case 'update':
+        $controller->update();
+        break;
+
+    case 'search':
+        $controller->search();
         break;
 
     default:

@@ -1,42 +1,65 @@
-.root {
-    -fx-font-family: "Segoe UI", Arial;
-    -fx-background-color: #ffffff;
+body {
+    font-family: 'Segoe UI';
+    background: #f5f6fa;
+    margin: 0;
 }
 
-/* Header */
 .header {
-    -fx-background-color: #e60023;
-    -fx-padding: 15;
+    background: linear-gradient(90deg, #e60000, #ff4d4d);
+    color: white;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
-.header-text {
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+.container {
+    width: 80%;
+    margin: 30px auto;
 }
 
-/* Form */
-.form {
-    -fx-padding: 20;
-    -fx-spacing: 10;
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
-.button-primary {
-    -fx-background-color: #e60023;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
+button {
+    background: #e60000;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
 }
 
-.button-primary:hover {
-    -fx-background-color: #cc001f;
+button:hover {
+    background: #cc0000;
 }
 
-.button-edit {
-    -fx-background-color: #ffa500;
-    -fx-text-fill: white;
+input {
+    padding: 8px;
+    width: 250px;
+    margin-bottom: 10px;
 }
 
-.button-delete {
-    -fx-background-color: #555;
-    -fx-text-fill: white;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    background: #e60000;
+    color: white;
+}
+
+td, th {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+a {
+    text-decoration: none;
+    color: #e60000;
+    font-weight: bold;
 }
