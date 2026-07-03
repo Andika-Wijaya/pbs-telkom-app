@@ -1,66 +1,83 @@
-<link rel="stylesheet" href="assets/css/style.css">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
 
-<div class="header">DATA PELANGGAN</div>
+<h2>Data Pelanggan</h2>
 
-<div class="container">
-<div class="card">
+<a href="index.php">+ Tambah</a>
 
-<a href="index.php" class="btn">+ Tambah Data</a>
+<table border="1" cellpadding="10">
+    <tr>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Layanan</th>
+        <th>Aksi</th>
+    </tr>
 
-<br><br>
-
-<table>
-<tr>
-    <th>No</th>
-    <th>Nama</th>
-    <th>Layanan</th>
-    <th>Aksi</th>
-</tr>
-
-<?php $no = 1; foreach($data as $row): ?>
-<tr>
-    <td><?= $no++ ?></td>
-    <td><?= $row['nama'] ?></td>
-    <td><?= $row['layanan'] ?></td>
-    <td class="action">
-        <button onclick="openEditModal('<?= $row['id'] ?>','<?= $row['nama'] ?>','<?= $row['layanan'] ?>')" class="edit">Edit</button>
-        <a href="index.php?action=delete&id=<?= $row['id'] ?>" class="delete" onclick="return confirm('Hapus?')">Hapus</a>
-    </td>
-</tr>
-<?php endforeach; ?>
-
+    <?php foreach($data as $row): ?>
+    <tr>
+        <td><?= $row['id'] ?></td>
+        <td><?= $row['nama'] ?></td>
+        <td><?= $row['layanan'] ?></td>
+        <td>
+            <button onclick="openEdit('<?= $row['id'] ?>','<?= $row['nama'] ?>','<?= $row['layanan'] ?>')">Edit</button>
+        </td>
+    </tr>
+    <?php endforeach; ?>
 </table>
 
-</div>
-</div>
+<!-- MODAL -->
+<div id="modalEdit" style="display:none; position:fixed; top:20%; left:35%; background:#fff; padding:20px; border:1px solid #000;">
+    
+    <h3>Edit Data</h3>
 
-<!-- MODAL EDIT -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <h3>Edit Data</h3>
+    <form id="formEdit">
+        <input type="hidden" name="id" id="edit_id">
 
-        <form method="POST" action="index.php?action=update">
-            <input type="hidden" name="id" id="edit_id">
+        <input type="text" name="nama" id="edit_nama" required><br><br>
 
-            <input type="text" name="nama" id="edit_nama"><br><br>
-            <input type="text" name="layanan" id="edit_layanan"><br><br>
+        <select name="layanan" id="edit_layanan">
+            <option value="Indihome">Indihome</option>
+            <option value="Wifi">Wifi</option>
+        </select><br><br>
 
-            <button type="submit">Update</button>
-            <button type="button" onclick="closeModal()">Batal</button>
-        </form>
-    </div>
+        <button type="submit">Update</button>
+        <button type="button" onclick="closeModal()">Batal</button>
+    </form>
 </div>
 
 <script>
-function openEditModal(id, nama, layanan) {
-    document.getElementById('editModal').style.display = 'flex';
-
-    document.getElementById('edit_id').value = id;
-    document.getElementById('edit_nama').value = nama;
-    document.getElementById('edit_layanan').value = layanan;
+function openEdit(id, nama, layanan) {
+    document.getElementById("modalEdit").style.display = "block";
+    document.getElementById("edit_id").value = id;
+    document.getElementById("edit_nama").value = nama;
+    document.getElementById("edit_layanan").value = layanan;
 }
 
 function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
+    document.getElementById("modalEdit").style.display = "none";
 }
+
+// AJAX UPDATE
+document.getElementById("formEdit").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    fetch("index.php?action=update", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(() => {
+        alert("Data berhasil diupdate");
+        location.reload();
+    });
+});
 </script>
+
+</body>
+</html>
