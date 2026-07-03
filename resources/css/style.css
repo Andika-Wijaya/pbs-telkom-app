@@ -1,0 +1,42 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial;
+    -fx-background-color: #ffffff;
+}
+
+/* Header */
+.header {
+    -fx-background-color: #e60023;
+    -fx-padding: 15;
+}
+
+.header-text {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Form */
+.form {
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.button-primary {
+    -fx-background-color: #e60023;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button-primary:hover {
+    -fx-background-color: #cc001f;
+}
+
+.button-edit {
+    -fx-background-color: #ffa500;
+    -fx-text-fill: white;
+}
+
+.button-delete {
+    -fx-background-color: #555;
+    -fx-text-fill: white;
+}
