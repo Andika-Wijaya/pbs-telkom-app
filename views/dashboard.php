@@ -4,6 +4,7 @@
 
 <div class="container">
 <div class="card">
+    <a href="index.php?action=logout">Logout</a>
 
 <a href="index.php" class="btn">+ Tambah Data</a>
 
