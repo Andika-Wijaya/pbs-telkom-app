@@ -51,4 +51,11 @@ class User {
         $stmt->execute(["%$keyword%"]);
         return $stmt;
     }
+
+    public function login($username, $password) {
+    $sql = "SELECT * FROM users WHERE username=? AND password=?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([$username, $password]);
+    return $stmt->fetch();
+}
 }

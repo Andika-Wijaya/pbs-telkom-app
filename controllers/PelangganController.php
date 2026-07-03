@@ -62,4 +62,23 @@ class PelangganController {
 
         include 'views/dashboard.php';
     }
+
+    public function login() {
+    require "views/login.php";}
+    public function loginProcess() {
+    $user = new User();
+    $data = $user->login($_POST['username'], $_POST['password']);
+
+    if ($data) {
+        $_SESSION['login'] = true;
+        header("Location: index.php?action=dashboard");
+    } else {
+        echo "Login gagal!";
+    }
+}
+
+public function logout() {
+    session_destroy();
+    header("Location: index.php");
+}
 }
