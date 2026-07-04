@@ -10,14 +10,17 @@ if (!isset($_SESSION['login'])) {
 }
 ?>
 
-<?php if (isset($_SESSION['success'])): ?>
-    <div class="alert success">
-        <?= $_SESSION['success']; ?>
-    </div>
-    <?php unset($_SESSION['success']); ?>
-<?php endif; ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 
-<link rel="stylesheet" href="assets/css/style.css">
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
 
 <div class="header">DATA PELANGGAN</div>
 
@@ -81,7 +84,7 @@ if (!isset($_SESSION['login'])) {
 </div>
 
 <script>
-// buka modal edit
+// ================= MODAL =================
 function openEditModal(id, nama, layanan) {
     document.getElementById('editModal').style.display = 'flex';
 
@@ -90,25 +93,52 @@ function openEditModal(id, nama, layanan) {
     document.getElementById('edit_layanan').value = layanan;
 }
 
-// tutup modal
 function closeModal() {
     document.getElementById('editModal').style.display = 'none';
 }
 
-// hapus data (AJAX)
+// ================= HAPUS DATA =================
 function hapusData(id) {
-    if(confirm("Yakin mau hapus data?")) {
-        fetch("index.php?action=delete&id=" + id)
-        .then(res => res.text())
-        .then(() => {
-            alert("Data berhasil dihapus");
-            location.reload();
-        });
-    }
+    Swal.fire({
+        title: 'Yakin?',
+        text: "Data akan dihapus!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch("index.php?action=delete&id=" + id)
+            .then(res => res.text())
+            .then(() => {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Data berhasil dihapus.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            });
+        }
+    });
 }
-
-setTimeout(() => {
-    let alert = document.querySelector('.alert');
-    if(alert) alert.style.display = 'none';
-}, 3000);
 </script>
+
+<!-- ================= POPUP LOGIN SUCCESS ================= -->
+<?php if (isset($_SESSION['success'])): ?>
+<script>
+Swal.fire({
+    title: 'Login Berhasil!',
+    text: 'Selamat datang, <?= $_SESSION['username']; ?> 👋',
+    icon: 'success',
+    showConfirmButton: false,
+    timer: 2000
+});
+</script>
+<?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
+</body>
+</html>
