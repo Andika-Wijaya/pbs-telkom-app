@@ -2,11 +2,13 @@
 session_start();
 
 // Hapus semua session
-$_SESSION = [];
-
-// Hancurkan session
+session_unset();
 session_destroy();
 
-// Redirect ke login + kirim notifikasi
-header("Location: /pbs-telkom-app/index.php?action=login&logout=success");
+// Start ulang untuk kirim pesan
+session_start();
+$_SESSION['success'] = "Logout berhasil!";
+
+// Redirect ke login
+header("Location: ../views/login.php");
 exit;

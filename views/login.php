@@ -13,13 +13,17 @@ $userModel = new User($conn);
 
 $error = "";
 
-// Kalau sudah login, langsung ke dashboard
+// kalau sudah login
 if (isset($_SESSION['login'])) {
     header("Location: /pbs-telkom-app/index.php?action=dashboard");
     exit;
 }
 
 if (isset($_POST['login'])) {
+
+    // 🔥 bersihkan notif lama
+    unset($_SESSION['success']);
+
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
@@ -48,14 +52,13 @@ if (isset($_POST['login'])) {
 <html>
 <head>
     <title>Login</title>
-
-    <!-- SWEETALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
 <h2>Login</h2>
 
+<!-- ❌ ERROR LOGIN -->
 <?php if ($error): ?>
 <script>
 Swal.fire({
@@ -66,7 +69,7 @@ Swal.fire({
 </script>
 <?php endif; ?>
 
-<!-- ✅ POPUP SETELAH LOGOUT -->
+<!-- ✅ LOGOUT SUCCESS -->
 <?php if (isset($_GET['logout'])): ?>
 <script>
 Swal.fire({
