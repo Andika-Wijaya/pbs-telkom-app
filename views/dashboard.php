@@ -43,27 +43,64 @@ if (!isset($_SESSION['login'])) {
         <table>
     <thead>
         <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Layanan</th>
-            <th>Aksi</th>
-        </tr>
+    <th>No Internet</th>
+    <th>Nama</th>
+    <th>No Tlp</th>
+    <th>Layanan</th>
+    <th>Harga</th>
+    <th>Tagihan</th>
+    <th>Status</th>
+    <th>Aksi</th>
+</tr>
     </thead>
 
     <tbody id="tableBody">
         <?php $no = 1; foreach($data as $row): ?>
         <tr>
-            <td><?= $no++ ?></td>
-            <td><?= htmlspecialchars($row['nama']) ?></td>
-            <td><?= htmlspecialchars($row['layanan']) ?></td>
-            <td class="action">
-                <button onclick="openEditModal('<?= $row['id'] ?>','<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>','<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>')" class="edit">
-                    Edit
-                </button>
+    <td><?= $no++ ?></td>
+    <td><?= htmlspecialchars($row['no_internet']) ?></td>
+    <td><?= htmlspecialchars($row['nama']) ?></td>
+    <td><?= htmlspecialchars($row['no_tlp']) ?></td>
+    <td><?= htmlspecialchars($row['layanan']) ?></td>
+    <td>Rp <?= number_format($row['harga']) ?></td>
 
-                <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
-            </td>
-        </tr>
+    <!-- TAGIHAN -->
+    <td>
+        <?php if ($row['tagihan'] == 'lunas'): ?>
+            <span style="color:green;">Lunas</span>
+        <?php else: ?>
+            <span style="color:red;">Belum Bayar</span>
+        <?php endif; ?>
+    </td>
+
+    <!-- STATUS -->
+    <td>
+        <?php if ($row['status'] == 'aktif'): ?>
+            <span style="color:green;">Aktif</span>
+        <?php elseif ($row['status'] == 'pending'): ?>
+            <span style="color:orange;">Pending</span>
+        <?php else: ?>
+            <span style="color:red;">Terisolir</span>
+        <?php endif; ?>
+    </td>
+
+    <td class="action">
+        <button onclick="openEditModal(
+    '<?= $row['id'] ?>',
+    '<?= $row['no_internet'] ?>',
+    '<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>',
+    '<?= $row['no_tlp'] ?>',
+    '<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>',
+    '<?= $row['harga'] ?>',
+    '<?= $row['tagihan'] ?>',
+    '<?= $row['status'] ?>'
+)">
+Edit
+</button>
+
+        <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
+    </td>
+</tr>
         <?php endforeach; ?>
     </tbody>
 </table>
@@ -79,8 +116,22 @@ if (!isset($_SESSION['login'])) {
         <form method="POST" action="index.php?action=update">
             <input type="hidden" name="id" id="edit_id">
 
-            <input type="text" name="nama" id="edit_nama" required><br><br>
-            <input type="text" name="layanan" id="edit_layanan" required><br><br>
+            <input type="text" name="no_internet" id="edit_no_internet" placeholder="No Internet" required><br><br>
+            <input type="text" name="nama" id="edit_nama" placeholder="Nama" required><br><br>
+            <input type="text" name="no_tlp" id="edit_no_tlp" placeholder="No Tlp" required><br><br>
+            <input type="text" name="layanan" id="edit_layanan" placeholder="Layanan" required><br><br>
+            <input type="number" name="harga" id="edit_harga" placeholder="Harga" required><br><br>
+
+            <select name="tagihan" id="edit_tagihan">
+                <option value="lunas">Lunas</option>
+                <option value="belum bayar">Belum Bayar</option>
+            </select><br><br>
+
+            <select name="status" id="edit_status">
+                <option value="aktif">Aktif</option>
+                <option value="pending">Pending</option>
+                <option value="terisolir">Terisolir</option>
+            </select><br><br>
 
             <button type="submit">Update</button>
             <button type="button" onclick="closeModal()">Batal</button>
@@ -103,30 +154,49 @@ if (!isset($_SESSION['login'])) {
         } else {
             let no = 1;
             data.forEach(row => {
-                html += `
-                <tr>
-                    <td>${no++}</td>
-                    <td>${row.nama}</td>
-                    <td>${row.layanan}</td>
-                    <td>
-                        <button onclick="openEditModal('${row.id}','${row.nama}','${row.layanan}')">Edit</button>
-                        <button onclick="hapusData(${row.id})">Hapus</button>
-                    </td>
-                </tr>
-                `;
-            });
+    html += `
+    <tr>
+        <td>${row.no_internet}</td>
+        <td>${row.nama}</td>
+        <td>${row.no_tlp}</td>
+        <td>${row.layanan}</td>
+        <td>Rp ${row.harga}</td>
+        <td>${row.tagihan}</td>
+        <td>${row.status}</td>
+        <td>
+            <button onclick="openEditModal(
+                '${row.id}',
+                '${row.no_internet}',
+                '${row.nama}',
+                '${row.no_tlp}',
+                '${row.layanan}',
+                '${row.harga}',
+                '${row.tagihan}',
+                '${row.status}'
+            )">Edit</button>
+
+            <button onclick="hapusData(${row.id})">Hapus</button>
+        </td>
+    </tr>
+    `;
+});
         }
 
         document.getElementById("tableBody").innerHTML = html;
     });
 });
 // ================= MODAL =================
-function openEditModal(id, nama, layanan) {
+function openEditModal(id, no_internet, nama, no_tlp, layanan, harga, tagihan, status) {
     document.getElementById('editModal').style.display = 'flex';
 
     document.getElementById('edit_id').value = id;
+    document.getElementById('edit_no_internet').value = no_internet;
     document.getElementById('edit_nama').value = nama;
+    document.getElementById('edit_no_tlp').value = no_tlp;
     document.getElementById('edit_layanan').value = layanan;
+    document.getElementById('edit_harga').value = harga;
+    document.getElementById('edit_tagihan').value = tagihan;
+    document.getElementById('edit_status').value = status;
 }
 
 function closeModal() {
