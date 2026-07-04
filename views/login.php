@@ -12,37 +12,27 @@ $conn = $db->connect();
 $userModel = new User($conn);
 
 $error = "";
-$success = "";
 
 // Kalau sudah login, langsung ke dashboard
 if (isset($_SESSION['login'])) {
-    header("Location: ../index.php?action=dashboard");
+    header("Location: /pbs-telkom-app/index.php?action=dashboard");
     exit;
 }
 
 if (isset($_POST['login'])) {
-    // Amankan input
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Ambil user dari database
     $user = $userModel->getUserByUsername($username);
 
-    // Debug (aktifkan kalau perlu)
-    // var_dump($user); die();
-
     if ($user) {
-       
-        // Verifikasi password hash
         if (password_verify($password, $user['password'])) {
 
-            // Simpan session
             $_SESSION['login'] = true;
             $_SESSION['username'] = $user['username'];
-
             $_SESSION['success'] = "Login berhasil!";
 
-            header("Location: ../index.php?action=dashboard");
+            header("Location: /pbs-telkom-app/index.php?action=dashboard");
             exit;
 
         } else {
@@ -58,13 +48,35 @@ if (isset($_POST['login'])) {
 <html>
 <head>
     <title>Login</title>
+
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
 <h2>Login</h2>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+<script>
+Swal.fire({
+    title: 'Login Gagal!',
+    text: '<?= $error ?>',
+    icon: 'error'
+});
+</script>
+<?php endif; ?>
+
+<!-- ✅ POPUP SETELAH LOGOUT -->
+<?php if (isset($_GET['logout'])): ?>
+<script>
+Swal.fire({
+    title: 'Logout Berhasil!',
+    text: 'Kamu sudah keluar dari sistem.',
+    icon: 'success',
+    timer: 2000,
+    showConfirmButton: false
+});
+</script>
 <?php endif; ?>
 
 <form method="POST">

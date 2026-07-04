@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // 🔐 Proteksi login
 if (!isset($_SESSION['login'])) {
-    header("Location: index.php");
+    header("Location: index.php?action=login");
     exit;
 }
 ?>
@@ -32,7 +32,7 @@ if (!isset($_SESSION['login'])) {
 <div class="container">
     <div class="card">
 
-        <a href="index.php?action=logout">Logout</a>
+        <a href="#" onclick="logoutConfirm()">Logout</a>
         <a href="index.php" class="btn">+ Tambah Data</a>
 
         <br><br>
@@ -121,6 +121,21 @@ function hapusData(id) {
                     location.reload();
                 });
             });
+        }
+    });
+}
+
+function logoutConfirm() {
+    Swal.fire({
+        title: 'Logout?',
+        text: "Kamu akan keluar dari sistem!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, logout',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "controllers/logout.php";
         }
     });
 }
