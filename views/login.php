@@ -1,27 +1,77 @@
 <?php
-session_start();
-require_once '../config/Database.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../models/User.php';
 
 $db = new Database();
 $conn = $db->connect();
 
+$userModel = new User($conn);
+
+$error = "";
+$success = "";
+
+// Kalau sudah login, langsung ke dashboard
+if (isset($_SESSION['login'])) {
+    header("Location: ../index.php?action=dashboard");
+    exit;
+}
+
 if (isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    // Amankan input
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-    $query = $conn->prepare("SELECT * FROM users WHERE username=?");
-    $query->execute([$username]);
-    $user = $query->fetch();
+    // Ambil user dari database
+    $user = $userModel->getUserByUsername($username);
 
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['login'] = true;
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['success'] = "Login berhasil! Selamat datang " . $user['username'];
+    // Debug (aktifkan kalau perlu)
+    // var_dump($user); die();
 
-        header("Location: dashboard.php");
-        exit;
+    if ($user) {
+       
+        // Verifikasi password hash
+        if (password_verify($password, $user['password'])) {
+
+            // Simpan session
+            $_SESSION['login'] = true;
+            $_SESSION['username'] = $user['username'];
+
+            $_SESSION['success'] = "Login berhasil!";
+
+            header("Location: ../index.php?action=dashboard");
+            exit;
+
+        } else {
+            $error = "Password salah!";
+        }
     } else {
-        echo "Login gagal";
+        $error = "Username tidak ditemukan!";
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+
+<h2>Login</h2>
+
+<?php if ($error): ?>
+    <p style="color:red"><?= $error ?></p>
+<?php endif; ?>
+
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <button type="submit" name="login">Login</button>
+</form>
+
+</body>
+</html>

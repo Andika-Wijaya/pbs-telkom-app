@@ -58,4 +58,17 @@ class User {
     $stmt->execute([$username, $password]);
     return $stmt->fetch();
 }
+
+public function createUser($username, $password) {
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+    $query = $this->conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+    return $query->execute([$username, $hash]);
+}
+
+public function getUserByUsername($username) {
+    $query = $this->conn->prepare("SELECT * FROM users WHERE username = ?");
+    $query->execute([$username]);
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
 }
