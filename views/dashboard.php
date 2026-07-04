@@ -1,5 +1,7 @@
 <?php
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // 🔐 Proteksi login
 if (!isset($_SESSION['login'])) {
@@ -7,6 +9,13 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 ?>
+
+<?php if (isset($_SESSION['success'])): ?>
+    <div class="alert success">
+        <?= $_SESSION['success']; ?>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>
 
 <link rel="stylesheet" href="assets/css/style.css">
 
@@ -97,4 +106,9 @@ function hapusData(id) {
         });
     }
 }
+
+setTimeout(() => {
+    let alert = document.querySelector('.alert');
+    if(alert) alert.style.display = 'none';
+}, 3000);
 </script>
