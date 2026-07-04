@@ -1,18 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+<?php
+session_start();
+require_once '../config/Database.php';
 
-<h2>Login</h2>
+$db = new Database();
+$conn = $db->connect();
 
-<form method="POST" action="index.php?action=loginProcess">
-    <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
+if (isset($_POST['login'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    <button type="submit">Login</button>
-</form>
+    $query = $conn->prepare("SELECT * FROM users WHERE username=?");
+    $query->execute([$username]);
+    $user = $query->fetch();
 
-</body>
-</html>
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['login'] = true;
+        $_SESSION['username'] = $user['username'];
+
+        header("Location: dashboard.php");
+        exit;
+    } else {
+        echo "Login gagal";
+    }
+}
+?>

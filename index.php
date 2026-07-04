@@ -1,4 +1,5 @@
 <?php
+session_start();
 $action = $_GET['action'] ?? 'login';
 require_once 'controllers/PelangganController.php';
 

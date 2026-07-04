@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require_once __DIR__ . '/../models/User.php';
 
 class PelangganController {
@@ -71,12 +71,14 @@ class PelangganController {
 
     public function login() {
     require "views/login.php";}
+
     public function loginProcess() {
     $user = new User();
     $data = $user->login($_POST['username'], $_POST['password']);
 
     if ($data) {
         $_SESSION['login'] = true;
+        $_SESSION['username'] = $data['username'];
         header("Location: index.php?action=dashboard");
     } else {
         echo "Login gagal!";
