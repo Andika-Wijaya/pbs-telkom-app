@@ -4,6 +4,14 @@ require_once __DIR__ . '/../models/User.php';
 
 class PelangganController {
 
+private $conn;
+
+public function __construct() {
+        require_once 'config/Database.php';
+        $db = new Database();
+        $this->conn = $db->connect();
+    }
+
     public function index() {
         include 'views/index.php';
     }
@@ -61,13 +69,37 @@ class PelangganController {
     }
 
     public function search() {
-        $user = new User();
-        $keyword = $_GET['keyword'];
-        $stmt = $user->search($keyword);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $keyword = $_GET['keyword'] ?? '';
 
-        include 'views/dashboard.php';
-    }
+    $query = "SELECT * FROM pelanggan WHERE nama LIKE ? OR layanan LIKE ?";
+    $stmt = $this->conn->prepare($query);
+
+    $search = "%$keyword%";
+    $stmt->execute([$search, $search]);
+
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    require 'views/dashboard.php';
+}
+
+public function searchAjax() {
+    $keyword = $_GET['keyword'] ?? '';
+
+    $stmt = $this->conn->prepare("
+        SELECT * FROM pelanggan 
+        WHERE nama LIKE ? OR layanan LIKE ?
+    ");
+
+    $search = "%$keyword%";
+    $stmt->execute([$search, $search]);
+
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // kirim JSON (bukan view)
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit;
+}
 
     public function login() {
     require "views/login.php";}

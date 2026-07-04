@@ -33,6 +33,10 @@ switch ($action) {
         $controller->search();
         break;
 
+    case 'searchAjax':
+    $controller->searchAjax();
+    break;
+
         case 'login':
     $controller->login();
     break;

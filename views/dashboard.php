@@ -33,35 +33,40 @@ if (!isset($_SESSION['login'])) {
     <div class="card">
 
         <a href="#" onclick="logoutConfirm()">Logout</a>
+
+        <input type="text" id="search" placeholder="Cari nama / layanan..." style="margin-bottom:10px;">
+
         <a href="index.php" class="btn">+ Tambah Data</a>
 
         <br><br>
 
         <table>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Layanan</th>
-                <th>Aksi</th>
-            </tr>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Layanan</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
 
-            <?php $no = 1; foreach($data as $row): ?>
-            <tr>
-                <td><?= $no++ ?></td>
-                <td><?= htmlspecialchars($row['nama']) ?></td>
-                <td><?= htmlspecialchars($row['layanan']) ?></td>
-                <td class="action">
-                    <button 
-                        onclick="openEditModal('<?= $row['id'] ?>','<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>','<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>')" 
-                        class="edit">
-                        Edit
-                    </button>
+    <tbody id="tableBody">
+        <?php $no = 1; foreach($data as $row): ?>
+        <tr>
+            <td><?= $no++ ?></td>
+            <td><?= htmlspecialchars($row['nama']) ?></td>
+            <td><?= htmlspecialchars($row['layanan']) ?></td>
+            <td class="action">
+                <button onclick="openEditModal('<?= $row['id'] ?>','<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>','<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>')" class="edit">
+                    Edit
+                </button>
 
-                    <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
+                <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
 
     </div>
 </div>
@@ -84,6 +89,37 @@ if (!isset($_SESSION['login'])) {
 </div>
 
 <script>
+    document.getElementById("search").addEventListener("keyup", function() {
+    let keyword = this.value;
+
+    fetch("index.php?action=searchAjax&keyword=" + keyword)
+    .then(res => res.json())
+    .then(data => {
+
+        let html = "";
+
+        if (data.length === 0) {
+            html = `<tr><td colspan="4">Data tidak ditemukan</td></tr>`;
+        } else {
+            let no = 1;
+            data.forEach(row => {
+                html += `
+                <tr>
+                    <td>${no++}</td>
+                    <td>${row.nama}</td>
+                    <td>${row.layanan}</td>
+                    <td>
+                        <button onclick="openEditModal('${row.id}','${row.nama}','${row.layanan}')">Edit</button>
+                        <button onclick="hapusData(${row.id})">Hapus</button>
+                    </td>
+                </tr>
+                `;
+            });
+        }
+
+        document.getElementById("tableBody").innerHTML = html;
+    });
+});
 // ================= MODAL =================
 function openEditModal(id, nama, layanan) {
     document.getElementById('editModal').style.display = 'flex';
