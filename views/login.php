@@ -84,7 +84,16 @@ Swal.fire({
 
 <form method="POST">
     <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
+    <div style="position: relative; width: 200px;">
+        <input type="password" id="password" name="password" placeholder="Password" required style="width:100%;">
+        
+        <span onclick="togglePassword()" 
+              style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;">
+            
+        </span>
+    </div>
+
+    <br>
     <button type="submit" name="login">Login</button>
 </form>
 
