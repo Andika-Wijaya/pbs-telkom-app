@@ -21,7 +21,11 @@ if (!isset($_SESSION['login'])) {
 </head>
 
 <body>
-
+<div style="margin-bottom:15px;">
+    <a href="index.php?action=dashboard">🏠 Dashboard</a> |
+    <a href="index.php?action=pelanggan">👥 Data Pelanggan</a> |
+    <a href="#" onclick="logoutConfirm()">🚪 Logout</a>
+</div>
 <div class="header">DATA PELANGGAN</div>
 
 <p>

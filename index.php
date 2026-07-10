@@ -1,55 +1,55 @@
 <?php
 session_start();
-$action = $_GET['action'] ?? 'login';
+
 require_once 'controllers/PelangganController.php';
 
 $controller = new PelangganController();
 
-$action = $_GET['action'] ?? 'index';
+$action = $_GET['action'] ?? 'dashboard';
 
 switch ($action) {
 
     case 'dashboard':
-        $controller->dashboard();
+        $stats = $controller->getStats();
+        $total = $stats['total'];
+        $aktif = $stats['aktif'];
+        include 'views/dashboard_home.php';
+        break;
+
+    case 'pelanggan':
+        $data = $controller->getAll();
+        include 'views/dashboard.php';
         break;
 
     case 'create':
         $controller->create();
         break;
 
-    case 'edit':
-        $controller->edit();
+    case 'update':
+        $controller->update();
         break;
 
     case 'delete':
         $controller->delete();
         break;
 
-    case 'update':
-        $controller->update();
-        break;
-
-    case 'search':
-        $controller->search();
-        break;
-
     case 'searchAjax':
-    $controller->searchAjax();
-    break;
+        $controller->searchAjax();
+        break;
 
-        case 'login':
-    $controller->login();
-    break;
+    case 'login':
+        $controller->login();
+        break;
 
-case 'loginProcess':
-    $controller->loginProcess();
-    break;
+    case 'loginProcess':
+        $controller->loginProcess();
+        break;
 
-case 'logout':
-    $controller->logout();
-    break;
+    case 'logout':
+        $controller->logout();
+        break;
 
     default:
-        $controller->index();
+        header("Location: index.php?action=dashboard");
         break;
 }
