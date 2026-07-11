@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../models/User.php';
 
 class PelangganController {
@@ -9,17 +8,18 @@ class PelangganController {
     public function __construct() {
         require_once 'config/Database.php';
         $db = new Database();
-        $this->conn = $db->connect();
+        $this->conn = $db->connect(); // PDO
     }
 
-    // ================= GET ALL =================
     public function getAll() {
         $stmt = $this->conn->query("SELECT * FROM pelanggan ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ================= CREATE =================
-    public function create() {
+    public function create(){
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
         $stmt = $this->conn->prepare("
             INSERT INTO pelanggan 
             (no_internet, nama, no_tlp, layanan, harga, tagihan, status)
@@ -36,11 +36,27 @@ class PelangganController {
             $_POST['status']
         ]);
 
-        header("Location: index.php?action=pelanggan");
+        // ambil ID terakhir
+        $id = $this->conn->lastInsertId();
+
+        echo json_encode([
+            "status" => "success",
+            "data" => [
+                "id" => $id,
+                "no_internet" => $_POST['no_internet'],
+                "nama" => $_POST['nama'],
+                "no_tlp" => $_POST['no_tlp'],
+                "layanan" => $_POST['layanan'],
+                "harga" => $_POST['harga'],
+                "tagihan" => $_POST['tagihan'],
+                "status_pelanggan" => $_POST['status']
+            ]
+        ]);
+
         exit;
     }
+}
 
-    // ================= UPDATE =================
     public function update() {
         $stmt = $this->conn->prepare("
             UPDATE pelanggan SET
@@ -69,14 +85,12 @@ class PelangganController {
         exit;
     }
 
-    // ================= DELETE =================
     public function delete() {
         $stmt = $this->conn->prepare("DELETE FROM pelanggan WHERE id=?");
         $stmt->execute([$_GET['id']]);
         exit;
     }
 
-    // ================= SEARCH AJAX =================
     public function searchAjax() {
         $keyword = $_GET['keyword'] ?? '';
 
@@ -88,14 +102,10 @@ class PelangganController {
         $search = "%$keyword%";
         $stmt->execute([$search, $search]);
 
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        header('Content-Type: application/json');
-        echo json_encode($data);
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         exit;
     }
 
-    // ================= LOGIN =================
     public function login() {
         require "views/login.php";
     }
@@ -115,7 +125,6 @@ class PelangganController {
         }
     }
 
-    // ================= STATS =================
     public function getStats() {
         $total = $this->conn->query("SELECT COUNT(*) FROM pelanggan")->fetchColumn();
         $aktif = $this->conn->query("SELECT COUNT(*) FROM pelanggan WHERE status='aktif'")->fetchColumn();
@@ -126,7 +135,6 @@ class PelangganController {
         ];
     }
 
-    // ================= LOGOUT =================
     public function logout() {
         session_destroy();
         header("Location: index.php?action=login");

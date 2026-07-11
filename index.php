@@ -7,49 +7,53 @@ $controller = new PelangganController();
 
 $action = $_GET['action'] ?? 'dashboard';
 
-switch ($action) {
+switch($action){
 
     case 'dashboard':
         $stats = $controller->getStats();
         $total = $stats['total'];
         $aktif = $stats['aktif'];
-        include 'views/dashboard_home.php';
-        break;
+        require 'views/dashboard_home.php';
+    break;
 
     case 'pelanggan':
         $data = $controller->getAll();
-        include 'views/dashboard.php';
-        break;
+        require 'views/dashboard.php';
+    break;
 
     case 'create':
-        $controller->create();
-        break;
+        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $controller->create();
+        } else {
+            require 'views/index.php';
+        }
+    break;
 
     case 'update':
         $controller->update();
-        break;
+    break;
 
     case 'delete':
         $controller->delete();
-        break;
+    break;
 
     case 'searchAjax':
         $controller->searchAjax();
-        break;
+    break;
 
     case 'login':
         $controller->login();
-        break;
+    break;
 
     case 'loginProcess':
         $controller->loginProcess();
-        break;
+    break;
 
     case 'logout':
         $controller->logout();
-        break;
+    break;
 
     default:
-        header("Location: index.php?action=dashboard");
-        break;
+        echo "404 Not Found";
+    break;
 }
