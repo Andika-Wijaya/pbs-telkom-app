@@ -44,67 +44,61 @@ if (!isset($_SESSION['login'])) {
 
         <br><br>
 
-        <table>
+        <table class="table-custom">
     <thead>
         <tr>
-    <th>No Internet</th>
-    <th>Nama</th>
-    <th>No Tlp</th>
-    <th>Layanan</th>
-    <th>Harga</th>
-    <th>Tagihan</th>
-    <th>Status</th>
-    <th>Aksi</th>
-</tr>
+            <th>No</th>
+            <th>No Internet</th>
+            <th>Nama</th>
+            <th>No Tlp</th>
+            <th>Layanan</th>
+            <th>Harga</th>
+            <th>Tagihan</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
     </thead>
 
     <tbody id="tableBody">
         <?php $no = 1; foreach($data as $row): ?>
         <tr>
-    <td><?= $no++ ?></td>
-    <td><?= htmlspecialchars($row['no_internet']) ?></td>
-    <td><?= htmlspecialchars($row['nama']) ?></td>
-    <td><?= htmlspecialchars($row['no_tlp']) ?></td>
-    <td><?= htmlspecialchars($row['layanan']) ?></td>
-    <td>Rp <?= number_format($row['harga']) ?></td>
+            <td><?= $no++ ?></td>
+            <td><?= htmlspecialchars($row['no_internet']) ?></td>
+            <td><?= htmlspecialchars($row['nama']) ?></td>
+            <td><?= htmlspecialchars($row['no_tlp']) ?></td>
+            <td><?= htmlspecialchars($row['layanan']) ?></td>
+            <td>Rp <?= number_format($row['harga']) ?></td>
 
-    <!-- TAGIHAN -->
-    <td>
-        <?php if ($row['tagihan'] == 'lunas'): ?>
-            <span style="color:green;">Lunas</span>
-        <?php else: ?>
-            <span style="color:red;">Belum Bayar</span>
-        <?php endif; ?>
-    </td>
+            <!-- TAGIHAN -->
+            <td>
+                <span class="badge <?= $row['tagihan'] == 'lunas' ? 'lunas' : 'belum'; ?>">
+                    <?= ucfirst($row['tagihan']); ?>
+                </span>
+            </td>
 
-    <!-- STATUS -->
-    <td>
-        <?php if ($row['status'] == 'aktif'): ?>
-            <span style="color:green;">Aktif</span>
-        <?php elseif ($row['status'] == 'pending'): ?>
-            <span style="color:orange;">Pending</span>
-        <?php else: ?>
-            <span style="color:red;">Terisolir</span>
-        <?php endif; ?>
-    </td>
+            <!-- STATUS -->
+            <td>
+                <span class="badge <?= $row['status']; ?>">
+                    <?= ucfirst($row['status']); ?>
+                </span>
+            </td>
 
-    <td class="action">
-        <button onclick="openEditModal(
-    '<?= $row['id'] ?>',
-    '<?= $row['no_internet'] ?>',
-    '<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>',
-    '<?= $row['no_tlp'] ?>',
-    '<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>',
-    '<?= $row['harga'] ?>',
-    '<?= $row['tagihan'] ?>',
-    '<?= $row['status'] ?>'
-)">
-Edit
-</button>
+            <!-- AKSI -->
+            <td class="action">
+                <button onclick="openEditModal(
+                    '<?= $row['id'] ?>',
+                    '<?= $row['no_internet'] ?>',
+                    '<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>',
+                    '<?= $row['no_tlp'] ?>',
+                    '<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>',
+                    '<?= $row['harga'] ?>',
+                    '<?= $row['tagihan'] ?>',
+                    '<?= $row['status'] ?>'
+                )">Edit</button>
 
-        <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
-    </td>
-</tr>
+                <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
+            </td>
+        </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
