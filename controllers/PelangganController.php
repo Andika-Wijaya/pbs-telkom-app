@@ -12,6 +12,10 @@ class PelangganController {
     }
 
     public function getAll() {
+        if (!$this->conn) {
+            return [];
+        }
+
         $stmt = $this->conn->query("SELECT * FROM pelanggan ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -19,6 +23,11 @@ class PelangganController {
     public function create(){
 
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
+        if (!$this->conn) {
+            echo json_encode(["status" => "error", "message" => "Database tidak tersedia."]);
+            exit;
+        }
 
         $stmt = $this->conn->prepare("
             INSERT INTO pelanggan 
@@ -58,6 +67,11 @@ class PelangganController {
 }
 
     public function update() {
+        if (!$this->conn) {
+            header("Location: index.php?action=pelanggan");
+            exit;
+        }
+
         $stmt = $this->conn->prepare("
             UPDATE pelanggan SET
                 no_internet=?,
@@ -86,17 +100,26 @@ class PelangganController {
     }
 
     public function delete() {
+        if (!$this->conn) {
+            exit;
+        }
+
         $stmt = $this->conn->prepare("DELETE FROM pelanggan WHERE id=?");
         $stmt->execute([$_GET['id']]);
         exit;
     }
 
     public function searchAjax() {
+        if (!$this->conn) {
+            echo json_encode([]);
+            exit;
+        }
+
         $keyword = $_GET['keyword'] ?? '';
 
         $stmt = $this->conn->prepare("
             SELECT * FROM pelanggan 
-            WHERE nama LIKE ? OR layanan LIKE ?
+            WHERE nama LIKE ? OR no_internet LIKE ?
         ");
 
         $search = "%$keyword%";
@@ -112,20 +135,36 @@ class PelangganController {
 
     public function loginProcess() {
         $user = new User();
-        $data = $user->login($_POST['username'], $_POST['password']);
+
+        if ($user->getError()) {
+            $_SESSION['error'] = "Koneksi database gagal: " . $user->getError();
+            header("Location: index.php?action=login");
+            exit;
+        }
+
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+
+        $data = $user->login($username, $password);
 
         if ($data) {
             $_SESSION['login'] = true;
             $_SESSION['username'] = $data['username'];
             $_SESSION['success'] = "Login berhasil!";
             header("Location: index.php?action=dashboard");
+            exit;
         } else {
-            $_SESSION['error'] = "Login gagal!";
+            $_SESSION['error'] = "Username atau password salah.";
             header("Location: index.php?action=login");
+            exit;
         }
     }
 
     public function getStats() {
+        if (!$this->conn) {
+            return ['total' => 0, 'aktif' => 0];
+        }
+
         $total = $this->conn->query("SELECT COUNT(*) FROM pelanggan")->fetchColumn();
         $aktif = $this->conn->query("SELECT COUNT(*) FROM pelanggan WHERE status='aktif'")->fetchColumn();
 

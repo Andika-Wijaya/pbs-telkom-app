@@ -10,5 +10,5 @@ session_start();
 $_SESSION['success'] = "Logout berhasil!";
 
 // Redirect ke login
-header("Location: ../views/login.php");
+header("Location: ../index.php?action=login");
 exit;

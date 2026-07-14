@@ -17,232 +17,267 @@ if (!isset($_SESSION['login'])) {
 <head>
     <title>Dashboard</title>
     <link rel="stylesheet" href="assets/css/style.css">
-
-    <!-- SWEETALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-<div style="margin-bottom:15px;">
-    <a href="index.php?action=dashboard">🏠 Dashboard</a> |
-    <a href="index.php?action=pelanggan">👥 Data Pelanggan</a> |
-    <a href="#" onclick="logoutConfirm()">🚪 Logout</a>
-</div>
-<div class="header">DATA PELANGGAN</div>
+<div class="page-shell">
+    <div class="topbar">
+        <div class="brand">Telkom Customer Management</div>
+        <div class="nav-links">
+            <a href="index.php?action=dashboard">🏠 Dashboard</a>
+            <a class="active" href="index.php?action=pelanggan">👥 Data Pelanggan</a>
+            <a href="#" onclick="logoutConfirm()">🚪 Logout</a>
+        </div>
+    </div>
 
-<p>
-    Selamat datang, 
-    <b><?= htmlspecialchars($_SESSION['username'] ?? 'User'); ?></b> 👋
-</p>
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Manajemen Data</p>
+            <h1>Data Pelanggan</h1>
+            <p>Kelola data pelanggan dengan tampilan yang lebih rapi dan mudah dipakai.</p>
+        </div>
+        <div class="header-chip">Selamat datang, <b><?= htmlspecialchars($_SESSION['username'] ?? 'User'); ?></b> 👋</div>
+    </div>
 
-<div class="container">
-    <div class="card">
+    <div class="container">
+        <div class="panel">
+            <div class="panel-toolbar">
+                <div class="search-box">
+                    <input type="text" id="search" placeholder="Cari nama atau No Internet...">
+                </div>
+                <button class="btn btn-primary" onclick="openTambah()">+ Tambah Pelanggan</button>
+            </div>
 
-        <a href="#" onclick="logoutConfirm()">Logout</a>
-
-        <input type="text" id="search" placeholder="Cari nama / layanan..." style="margin-bottom:10px;">
-
-<button onclick="openTambah()">Tambah Data</button>        <br><br>
-
-        <table class="table-custom">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>No</th>
-            <th>No Internet</th>
-            <th>Nama</th>
-            <th>No Tlp</th>
-            <th>Layanan</th>
-            <th>Harga</th>
-            <th>Tagihan</th>
-            <th>Status</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-
-    <tbody id="tableBody">
-        <?php $no = 1; foreach($data as $row): ?>
-        <tr>
-            <td><?= $no++ ?></td>
-            <td><?= htmlspecialchars($row['no_internet']) ?></td>
-            <td><?= htmlspecialchars($row['nama']) ?></td>
-            <td><?= htmlspecialchars($row['no_tlp']) ?></td>
-            <td><?= htmlspecialchars($row['layanan']) ?></td>
-            <td>Rp <?= number_format($row['harga']) ?></td>
-
-            <!-- TAGIHAN -->
-            <td>
-                <span class="badge <?= $row['tagihan'] == 'lunas' ? 'lunas' : 'belum'; ?>">
-                    <?= ucfirst($row['tagihan']); ?>
-                </span>
-            </td>
-
-            <!-- STATUS -->
-            <td>
-                <span class="badge <?= $row['status']; ?>">
-                    <?= ucfirst($row['status']); ?>
-                </span>
-            </td>
-
-            <!-- AKSI -->
-            <td class="action">
-                <button onclick="openEditModal(
-                    '<?= $row['id'] ?>',
-                    '<?= $row['no_internet'] ?>',
-                    '<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>',
-                    '<?= $row['no_tlp'] ?>',
-                    '<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>',
-                    '<?= $row['harga'] ?>',
-                    '<?= $row['tagihan'] ?>',
-                    '<?= $row['status'] ?>'
-                )">Edit</button>
-
-                <button onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-
+            <div class="table-wrap">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>No Internet</th>
+                            <th>Nama</th>
+                            <th>No Tlp</th>
+                            <th>Layanan</th>
+                            <th>Harga</th>
+                            <th>Tagihan</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <?php if (empty($data)): ?>
+                        <tr>
+                            <td colspan="9" class="empty-state">Belum ada data pelanggan.</td>
+                        </tr>
+                        <?php else: ?>
+                        <?php $no = 1; foreach($data as $row): ?>
+                        <tr>
+                            <td><?= $no++ ?></td>
+                            <td><?= htmlspecialchars($row['no_internet']) ?></td>
+                            <td><?= htmlspecialchars($row['nama']) ?></td>
+                            <td><?= htmlspecialchars($row['no_tlp']) ?></td>
+                            <td><?= htmlspecialchars($row['layanan']) ?></td>
+                            <td>Rp <?= number_format($row['harga']) ?></td>
+                            <td>
+                                <span class="badge <?= $row['tagihan'] == 'lunas' ? 'lunas' : 'belum'; ?>">
+                                    <?= ucfirst($row['tagihan']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge <?= $row['status']; ?>">
+                                    <?= ucfirst($row['status']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="edit-btn" type="button" onclick="openEditModal(
+                                        '<?= $row['id'] ?>',
+                                        '<?= htmlspecialchars($row['no_internet'], ENT_QUOTES) ?>',
+                                        '<?= htmlspecialchars($row['nama'], ENT_QUOTES) ?>',
+                                        '<?= htmlspecialchars($row['no_tlp'], ENT_QUOTES) ?>',
+                                        '<?= htmlspecialchars($row['layanan'], ENT_QUOTES) ?>',
+                                        '<?= $row['harga'] ?>',
+                                        '<?= $row['tagihan'] ?>',
+                                        '<?= $row['status'] ?>'
+                                    )">Edit</button>
+                                    <button class="delete-btn" type="button" onclick="hapusData(<?= $row['id'] ?>)">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
-<div id="formContainer" style="display:none; margin-top:20px;">
+<div id="editModal" class="modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Edit Data Pelanggan</h3>
+            <button type="button" class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="index.php?action=update" class="form-grid">
+                <input type="hidden" name="id" id="edit_id">
 
-<form id="formTambah">
+                <div class="field">
+                    <label>No Internet</label>
+                    <input type="text" name="no_internet" id="edit_no_internet" placeholder="No Internet" required>
+                </div>
+                <div class="field">
+                    <label>Nama</label>
+                    <input type="text" name="nama" id="edit_nama" placeholder="Nama" required>
+                </div>
+                <div class="field">
+                    <label>No Tlp</label>
+                    <input type="text" name="no_tlp" id="edit_no_tlp" placeholder="No Tlp" required>
+                </div>
+                <div class="field">
+                    <label>Layanan</label>
+                    <select name="layanan" id="edit_layanan" required>
+                        <option value="">-- Pilih Layanan --</option>
+                        <?php foreach($layananList as $l): ?>
+                            <option value="<?= htmlspecialchars($l['nama']); ?>" data-harga="<?= $l['harga']; ?>" data-kode="<?= $l['kode']; ?>">
+                                <?= htmlspecialchars($l['nama']); ?> - <?= number_format($l['harga'], 0, ',', '.'); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Harga</label>
+                    <input type="number" name="harga" id="edit_harga" placeholder="Harga" required>
+                </div>
+                <div class="field">
+                    <label>Tagihan</label>
+                    <select name="tagihan" id="edit_tagihan">
+                        <option value="lunas">Lunas</option>
+                        <option value="belum bayar">Belum Bayar</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Status</label>
+                    <select name="status" id="edit_status">
+                        <option value="aktif">Aktif</option>
+                        <option value="pending">Pending</option>
+                        <option value="terisolir">Terisolir</option>
+                    </select>
+                </div>
 
-    <input type="text" name="no_internet" placeholder="No Internet" required><br><br>
-    <input type="text" name="nama" placeholder="Nama" required><br><br>
-    <input type="text" name="no_tlp" placeholder="No Tlp" required><br><br>
-
-    <select name="layanan" required>
-        <option value="">-- Pilih Layanan --</option>
-        <?php foreach($layananList as $l): ?>
-            <option value="<?= $l['nama']; ?>" data-harga="<?= $l['harga']; ?>">
-    <?= $l['nama']; ?> - <?= $l['harga']; ?>
-</option>
-        <?php endforeach; ?>
-    </select>
-
-    <input type="number" name="harga" placeholder="Harga" required><br><br>
-
-    <select name="tagihan">
-        <option value="lunas">Lunas</option>
-        <option value="belum bayar">Belum Bayar</option>
-    </select><br><br>
-
-    <select name="status">
-        <option value="aktif">Aktif</option>
-        <option value="pending">Pending</option>
-        <option value="terisolir">Terisolir</option>
-    </select><br><br>
-
-    <button type="submit">Simpan</button>
-</form>
-
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" onclick="closeModal()">Batal</button>
+                    <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<!-- MODAL EDIT -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <h3>Edit Data</h3>
+<div id="modalTambah" class="modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Tambah Pelanggan Baru</h3>
+            <button type="button" class="close-btn" onclick="closeTambah()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="formTambahModal" class="form-grid" method="POST" action="index.php?action=create">
+                <div class="field">
+                    <label>No Internet</label>
+                    <input type="text" name="no_internet" id="tambah_no_internet" placeholder="No Internet" readonly required>
+                </div>
+                <div class="field">
+                    <label>Nama</label>
+                    <input type="text" name="nama" placeholder="Nama" required>
+                </div>
+                <div class="field">
+                    <label>No Tlp</label>
+                    <input type="text" name="no_tlp" placeholder="No Tlp" required>
+                </div>
+                <div class="field">
+                    <label>Layanan</label>
+                    <select name="layanan" id="layanan" required>
+                        <option value="">-- Pilih Layanan --</option>
+                        <?php foreach($layananList as $l): ?>
+                            <option value="<?= $l['nama']; ?>" data-harga="<?= $l['harga']; ?>" data-kode="<?= $l['kode']; ?>">
+                                <?= $l['nama']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Harga</label>
+                    <input type="number" name="harga" id="harga" placeholder="Harga" required>
+                </div>
+                <div class="field">
+                    <label>Tagihan</label>
+                    <select name="tagihan">
+                        <option value="lunas">Lunas</option>
+                        <option value="belum bayar">Belum Bayar</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="aktif">Aktif</option>
+                        <option value="pending">Pending</option>
+                        <option value="terisolir">Terisolir</option>
+                    </select>
+                </div>
 
-        <form method="POST" action="index.php?action=update">
-            <input type="hidden" name="id" id="edit_id">
-
-            <input type="text" name="no_internet" id="edit_no_internet" placeholder="No Internet" required><br><br>
-            <input type="text" name="nama" id="edit_nama" placeholder="Nama" required><br><br>
-            <input type="text" name="no_tlp" id="edit_no_tlp" placeholder="No Tlp" required><br><br>
-            <select name="layanan" id="edit_layanan" required>
-                <option value="">-- Pilih Layanan --</option>
-                <?php foreach($layananList as $l): ?>
-                    <option value="<?= htmlspecialchars($l['nama']); ?>" data-harga="<?= $l['harga']; ?>">
-                        <?= htmlspecialchars($l['nama']); ?> - <?= number_format($l['harga'], 0, ',', '.'); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select><br><br>
-            <input type="number" name="harga" id="edit_harga" placeholder="Harga" required><br><br>
-
-            <select name="tagihan" id="edit_tagihan">
-                <option value="lunas">Lunas</option>
-                <option value="belum bayar">Belum Bayar</option>
-            </select><br><br>
-
-            <select name="status" id="edit_status">
-                <option value="aktif">Aktif</option>
-                <option value="pending">Pending</option>
-                <option value="terisolir">Terisolir</option>
-            </select><br><br>
-
-            <button type="submit">Update</button>
-            <button type="button" onclick="closeModal()">Batal</button>
-        </form>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" onclick="closeTambah()">Batal</button>
+                    <button class="btn btn-primary" type="submit">Simpan</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    document.getElementById("search").addEventListener("keyup", function() {
-    let keyword = this.value;
+const searchInput = document.getElementById('search');
+if (searchInput) {
+    searchInput.addEventListener('keyup', function() {
+        let keyword = this.value;
 
-    fetch("index.php?action=searchAjax&keyword=" + keyword)
-    .then(res => res.json())
-    .then(data => {
+        fetch('index.php?action=searchAjax&keyword=' + keyword)
+        .then(res => res.json())
+        .then(data => {
+            let html = '';
 
-        let html = "";
+            if (data.length === 0) {
+                html = '<tr><td colspan="9" class="empty-state">Data tidak ditemukan</td></tr>';
+            } else {
+                let no = 1;
+                data.forEach(row => {
+                    html += `
+                    <tr>
+                        <td>${no++}</td>
+                        <td>${row.no_internet}</td>
+                        <td>${row.nama}</td>
+                        <td>${row.no_tlp}</td>
+                        <td>${row.layanan}</td>
+                        <td>Rp ${row.harga}</td>
+                        <td><span class="badge ${row.tagihan === 'lunas' ? 'lunas' : 'belum'}">${row.tagihan}</span></td>
+                        <td><span class="badge ${row.status}">${row.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit-btn" type="button" onclick="openEditModal('${row.id}', '${row.no_internet}', '${row.nama}', '${row.no_tlp}', '${row.layanan}', '${row.harga}', '${row.tagihan}', '${row.status}')">Edit</button>
+                                <button class="delete-btn" type="button" onclick="hapusData(${row.id})">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+            }
 
-        if (data.length === 0) {
-            html = `<tr><td colspan="9">Data tidak ditemukan</td></tr>`;
-        } else {
-            let no = 1;
-data.forEach(row => {
-html += `
-<tr>
-    <td>${no++}</td>
-    <td>${row.no_internet}</td>
-    <td>${row.nama}</td>
-    <td>${row.no_tlp}</td>
-    <td>${row.layanan}</td>
-    <td>Rp ${row.harga}</td>
-
-    <td>
-        <span class="badge ${row.tagihan === 'lunas' ? 'lunas' : 'belum'}">
-            ${row.tagihan}
-        </span>
-    </td>
-
-    <td>
-        <span class="badge ${row.status}">
-            ${row.status}
-        </span>
-    </td>
-
-    <td>
-        <button onclick="openEditModal(
-            '${row.id}',
-            '${row.no_internet}',
-            '${row.nama}',
-            '${row.no_tlp}',
-            '${row.layanan}',
-            '${row.harga}',
-            '${row.tagihan}',
-            '${row.status}'
-        )">Edit</button>
-
-        <button onclick="hapusData(${row.id})">Hapus</button>
-    </td>
-</tr>
-`;
-});
-        }
-
-        document.getElementById("tableBody").innerHTML = html;
+            document.getElementById('tableBody').innerHTML = html;
+        });
     });
-});
-// ================= MODAL =================
+}
 
 function openEditModal(id, no_internet, nama, no_tlp, layanan, harga, tagihan, status) {
-    document.getElementById('editModal').style.display = 'flex';
-
+    document.getElementById('editModal').classList.add('active');
     document.getElementById('edit_id').value = id;
     document.getElementById('edit_no_internet').value = no_internet;
     document.getElementById('edit_nama').value = nama;
@@ -263,28 +298,41 @@ function openEditModal(id, no_internet, nama, no_tlp, layanan, harga, tagihan, s
     }
 
     if (!found) {
-        layananSelect.value = "";
+        layananSelect.value = '';
     }
-
-    document.getElementById('edit_harga').value = harga;
 }
 
 function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
+    document.getElementById('editModal').classList.remove('active');
 }
 
-// ================= HAPUS DATA =================
+function openTambah() {
+    const form = document.getElementById('formTambahModal');
+    if (form) {
+        form.reset();
+        const noInternetInput = document.getElementById('tambah_no_internet');
+        if (noInternetInput) {
+            noInternetInput.value = '';
+        }
+    }
+    document.getElementById('modalTambah').classList.add('active');
+}
+
+function closeTambah() {
+    document.getElementById('modalTambah').classList.remove('active');
+}
+
 function hapusData(id) {
     Swal.fire({
         title: 'Yakin?',
-        text: "Data akan dihapus!",
+        text: 'Data akan dihapus!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ya, hapus!',
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch("index.php?action=delete&id=" + id)
+            fetch('index.php?action=delete&id=' + id)
             .then(res => res.text())
             .then(() => {
                 Swal.fire({
@@ -304,22 +352,19 @@ function hapusData(id) {
 function logoutConfirm() {
     Swal.fire({
         title: 'Logout?',
-        text: "Kamu akan keluar dari sistem!",
+        text: 'Kamu akan keluar dari sistem!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ya, logout',
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = "controllers/logout.php";
+            window.location.href = 'controllers/logout.php';
         }
     });
 }
-</script>
 
-<!-- ================= POPUP LOGIN SUCCESS ================= -->
 <?php if (isset($_SESSION['success'])): ?>
-<script>
 Swal.fire({
     title: 'Login Berhasil!',
     text: 'Selamat datang, <?= $_SESSION['username']; ?> 👋',
@@ -327,75 +372,17 @@ Swal.fire({
     showConfirmButton: false,
     timer: 2000
 });
-</script>
 <?php unset($_SESSION['success']); ?>
 <?php endif; ?>
 
-<script>
-function showForm(){
-    document.getElementById("formContainer").style.display = "block";
-}
-</script>
-<div id="modalTambah" class="modal">
-
-<div class="modal-content">
-    <span class="close" onclick="closeTambah()">&times;</span>
-
-    <h2>Tambah Pelanggan</h2>
-
-    <form id="formTambahModal" class="form-tambah-pelanggan" method="POST" action="index.php?action=create">
-
-        <input type="text" name="no_internet" placeholder="No Internet" required><br><br>
-        <input type="text" name="nama" placeholder="Nama" required><br><br>
-        <input type="text" name="no_tlp" placeholder="No Tlp" required><br><br>
-
-        <select name="layanan" id="layanan" required>
-    <option value="">-- Pilih Layanan --</option>
-    <?php foreach($layananList as $l): ?>
-        <option value="<?= $l['nama']; ?>" data-harga="<?= $l['harga']; ?>">
-            <?= $l['nama']; ?>
-        </option>
-    <?php endforeach; ?>
-</select>
-
-        <input type="number" name="harga" id="harga" placeholder="Harga" required><br><br>
-
-        <select name="tagihan">
-            <option value="lunas">Lunas</option>
-            <option value="belum bayar">Belum Bayar</option>
-        </select><br><br>
-
-        <select name="status">
-            <option value="aktif">Aktif</option>
-            <option value="pending">Pending</option>
-            <option value="terisolir">Terisolir</option>
-        </select><br><br>
-
-        <button type="submit">Simpan</button>
-    </form>
-
-</div>
-</div>
-
-<script>
-function openTambah(){
-    document.getElementById("modalTambah").style.display = "flex";
-}
-
-function closeTambah(){
-    document.getElementById("modalTambah").style.display = "none";
-}
-</script>
-
-<script>
-document.getElementById("formTambahModal")?.addEventListener("submit", function(e) {
+document.getElementById('formTambahModal')?.addEventListener('submit', function(e) {
     e.preventDefault();
 
     const form = this;
     const formData = new FormData(form);
 
-    fetch("index.php?action=create", {
-        method: "POST",
+    fetch('index.php?action=create', {
+        method: 'POST',
         body: formData
     })
     .then(async (res) => {
@@ -403,11 +390,11 @@ document.getElementById("formTambahModal")?.addEventListener("submit", function(
         try {
             return JSON.parse(text);
         } catch (err) {
-            throw new Error(text || "Respons server tidak valid");
+            throw new Error(text || 'Respons server tidak valid');
         }
     })
     .then((res) => {
-        if (res.status === "success") {
+        if (res.status === 'success') {
             form.reset();
             closeTambah();
             Swal.fire({
@@ -437,27 +424,36 @@ document.getElementById("formTambahModal")?.addEventListener("submit", function(
     });
 });
 
-document.addEventListener("change", function(e){
+function generateNoInternet(kode) {
+    if (!kode) return '';
+    const now = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 900 + 100);
+    return `${kode}-${now}${random}`;
+}
 
-    // kalau yang diubah adalah select layanan
-    if(e.target.name === "layanan"){
+function updateFormFields(selectElement) {
+    const selected = selectElement.options[selectElement.selectedIndex];
+    const harga = selected.getAttribute('data-harga');
+    const kode = selected.getAttribute('data-kode');
+    const form = selectElement.closest('form');
 
-        let selected = e.target.options[e.target.selectedIndex];
-        let harga = selected.getAttribute("data-harga");
+    if (!form) return;
 
-        console.log("Harga:", harga); // debug
+    const inputHarga = form.querySelector("input[name='harga']");
+    const inputNoInternet = form.querySelector("input[name='no_internet']");
 
-        // cari form terdekat
-        let form = e.target.closest("form");
-
-        if(form){
-            let inputHarga = form.querySelector("input[name='harga']");
-            if(inputHarga){
-                inputHarga.value = harga;
-            }
-        }
+    if (inputHarga) {
+        inputHarga.value = harga || '';
     }
+    if (inputNoInternet) {
+        inputNoInternet.value = generateNoInternet(kode);
+    }
+}
 
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'layanan') {
+        updateFormFields(e.target);
+    }
 });
 </script>
 
