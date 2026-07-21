@@ -143,7 +143,7 @@ require_once __DIR__ . '/../config/layanan.php';
 </div>
 
 <footer style="margin-top:24px; text-align:center; color:#94a3b8; padding:18px 0;">
-    &copy; <?= date('Y'); ?> Telkom Customer Management — dibuat dengan PHP
+    &copy; <?= date('Y'); ?> Telkom Customer Management 
 </footer>
 
 <script>

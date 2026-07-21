@@ -78,6 +78,8 @@ if (!isset($_SESSION['login'])) {
                 <div style="display:flex; gap:8px; align-items:center;">
                     <button class="btn btn-primary" onclick="openTambah()">+ Tambah Pelanggan</button>
                     <a class="btn btn-primary btn-export" href="index.php?action=export">⬇ Export CSV</a>
+                    <button id="apiCheckBtn" class="btn" type="button">API: Cek Pelanggan</button>
+                    <span id="apiStatus" style="margin-left:8px; color:#64748b;"></span>
                 </div>
             </div>
 
@@ -488,10 +490,23 @@ document.addEventListener('change', function(e) {
         updateFormFields(e.target);
     }
 });
+
+// API check button (demonstrasi AJAX ke endpoint service)
+document.getElementById('apiCheckBtn')?.addEventListener('click', async function(){
+    const status = document.getElementById('apiStatus');
+    if (status) status.textContent = 'Memeriksa...';
+    try {
+        const res = await fetch('api.php?action=listPelanggan');
+        const data = await res.json();
+        if (status) status.textContent = data.success ? ('OK — ' + (data.data.length || 0) + ' baris') : 'API respon error';
+    } catch (err) {
+        if (status) status.textContent = 'Gagal memanggil API';
+    }
+});
 </script>
 
 <footer style="margin-top:24px; text-align:center; color:#94a3b8; padding:18px 0;">
-    &copy; <?= date('Y'); ?> Telkom Customer Management — dibuat dengan PHP
+    &copy; <?= date('Y'); ?> Telkom Customer Management 
 </footer>
 
 </body>

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../lib/Validation.php';
 
 class PelangganController {
 
@@ -20,84 +21,83 @@ class PelangganController {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create(){
-
-    if($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-        if (!$this->conn) {
-            echo json_encode(["status" => "error", "message" => "Database tidak tersedia."]);
-            exit;
+    public function create()
+    {
+        // accept form-encoded POST or JSON body
+        $inputJson = json_decode(file_get_contents('php://input'), true);
+        if ($inputJson && empty($_POST)) {
+            $_POST = $inputJson;
         }
 
-        $stmt = $this->conn->prepare("
-            INSERT INTO pelanggan 
-            (no_internet, nama, no_tlp, layanan, harga, tagihan, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ");
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-        $stmt->execute([
-            $_POST['no_internet'],
-            $_POST['nama'],
-            $_POST['no_tlp'],
-            $_POST['layanan'],
-            $_POST['harga'],
-            $_POST['tagihan'],
-            $_POST['status']
-        ]);
+            if (!$this->conn) {
+                $this->respondJson(['status' => 'error', 'message' => 'Database tidak tersedia.'], 500);
+            }
 
-        // ambil ID terakhir
-        $id = $this->conn->lastInsertId();
+            $validation = Validation::validatePelangganData($_POST);
+            if (!$validation['valid']) {
+                if ($this->isJsonRequest()) {
+                    $this->respondJson(['status' => 'error', 'errors' => $validation['errors']], 422);
+                } else {
+                    if (session_status() === PHP_SESSION_NONE) session_start();
+                    $_SESSION['error'] = 'Validasi gagal. Periksa input.';
+                    header('Location: index.php?action=pelanggan');
+                }
+                exit;
+            }
 
-        echo json_encode([
-            "status" => "success",
-            "data" => [
-                "id" => $id,
-                "no_internet" => $_POST['no_internet'],
-                "nama" => $_POST['nama'],
-                "no_tlp" => $_POST['no_tlp'],
-                "layanan" => $_POST['layanan'],
-                "harga" => $_POST['harga'],
-                "tagihan" => $_POST['tagihan'],
-                "status_pelanggan" => $_POST['status']
-            ]
-        ]);
+            $stmt = $this->conn->prepare("
+                INSERT INTO pelanggan 
+                (no_internet, nama, no_tlp, layanan, harga, tagihan, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
 
-        exit;
-    }
-}
+            $stmt->execute([
+                $_POST['no_internet'],
+                $_POST['nama'],
+                $_POST['no_tlp'],
+                $_POST['layanan'],
+                $_POST['harga'],
+                $_POST['tagihan'],
+                $_POST['status']
+            ]);
 
-    public function update() {
-        if (!$this->conn) {
-            header("Location: index.php?action=pelanggan");
-            exit;
+            // ambil ID terakhir
+            $id = $this->conn->lastInsertId();
+
+            $this->respondJson([
+                'status' => 'success',
+                'data' => [
+                    'id' => $id,
+                    'no_internet' => $_POST['no_internet'],
+                    'nama' => $_POST['nama'],
+                    'no_tlp' => $_POST['no_tlp'],
+                    'layanan' => $_POST['layanan'],
+                    'harga' => $_POST['harga'],
+                    'tagihan' => $_POST['tagihan'],
+                    'status_pelanggan' => $_POST['status']
+                ]
+            ], 201);
         }
+    }
 
-        $stmt = $this->conn->prepare("
-            UPDATE pelanggan SET
-                no_internet=?,
-                nama=?,
-                no_tlp=?,
-                layanan=?,
-                harga=?,
-                tagihan=?,
-                status=?
-            WHERE id=?
-        ");
+    private function isJsonRequest()
+    {
+        $ct = $_SERVER['CONTENT_TYPE'] ?? '';
+        $xhr = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        return stripos($ct, 'application/json') !== false || strtolower($xhr) === 'xmlhttprequest';
+    }
 
-        $stmt->execute([
-            $_POST['no_internet'],
-            $_POST['nama'],
-            $_POST['no_tlp'],
-            $_POST['layanan'],
-            $_POST['harga'],
-            $_POST['tagihan'],
-            $_POST['status'],
-            $_POST['id']
-        ]);
-
-        header("Location: index.php?action=pelanggan");
+    private function respondJson($payload, $status = 200)
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($payload);
         exit;
     }
+
+    
 
     public function delete() {
         if (!$this->conn) {
@@ -201,6 +201,52 @@ class PelangganController {
         exit;
     }
 
+    public function update()
+    {
+        if (!$this->conn) {
+            header("Location: index.php?action=pelanggan");
+            exit;
+        }
+
+        // support JSON body
+        $inputJson = json_decode(file_get_contents('php://input'), true);
+        if ($inputJson && empty($_POST)) {
+            $_POST = $inputJson;
+        }
+
+        $validation = Validation::validatePelangganData($_POST);
+        if (!$validation['valid']) {
+            if ($this->isJsonRequest()) {
+                $this->respondJson(['status' => 'error', 'errors' => $validation['errors']], 422);
+            } else {
+                if (session_status() === PHP_SESSION_NONE) session_start();
+                $_SESSION['error'] = 'Validasi gagal. Periksa input.';
+                header('Location: index.php?action=pelanggan');
+            }
+            exit;
+        }
+
+        $stmt = $this->conn->prepare("\n            UPDATE pelanggan SET\n                no_internet=?,\n                nama=?,\n                no_tlp=?,\n                layanan=?,\n                harga=?,\n                tagihan=?,\n                status=?\n            WHERE id=?\n        ");
+
+        $stmt->execute([
+            $_POST['no_internet'],
+            $_POST['nama'],
+            $_POST['no_tlp'],
+            $_POST['layanan'],
+            $_POST['harga'],
+            $_POST['tagihan'],
+            $_POST['status'],
+            $_POST['id']
+        ]);
+
+        if ($this->isJsonRequest()) {
+            $this->respondJson(['status' => 'success']);
+        }
+
+        header("Location: index.php?action=pelanggan");
+        exit;
+    }
+
     public function exportCsv() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -222,14 +268,14 @@ class PelangganController {
 
         foreach ($data as $row) {
             fputcsv($output, [
-                $row['id'],
-                $row['no_internet'],
-                $row['nama'],
-                $row['no_tlp'],
-                $row['layanan'],
-                $row['harga'],
-                $row['tagihan'],
-                $row['status']
+                $row['id'] ?? '',
+                $row['no_internet'] ?? '',
+                $row['nama'] ?? '',
+                $row['no_tlp'] ?? '',
+                $row['layanan'] ?? '',
+                $row['harga'] ?? '',
+                $row['tagihan'] ?? '',
+                $row['status'] ?? ''
             ]);
         }
 
