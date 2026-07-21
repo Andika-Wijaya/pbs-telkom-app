@@ -17,8 +17,24 @@ require_once __DIR__ . '/../config/layanan.php';
 <div class="page-shell">
     <div class="topbar">
         <div class="brand">
-            <?php if (file_exists(__DIR__ . '/../assets/img/telkom.png')): ?>
-                <img src="assets/img/telkom.png" alt="Telkom" style="width:36px;height:36px;object-fit:contain;">
+            <?php
+            $logo_path = null;
+            $logo_candidates = [
+                __DIR__ . '/../assets/img/telkom.png',
+                __DIR__ . '/../assets/img/logo.png',
+                __DIR__ . '/../assets/img/logo.jpg',
+                __DIR__ . '/../assets/img/logo.jpeg',
+                __DIR__ . '/../assets/img/logo.jfif',
+            ];
+            foreach ($logo_candidates as $candidate) {
+                if (file_exists($candidate)) {
+                    $logo_path = str_replace(__DIR__ . '/../', '', $candidate);
+                    break;
+                }
+            }
+            ?>
+            <?php if ($logo_path): ?>
+                <img src="<?= htmlspecialchars($logo_path); ?>" alt="Telkom" style="width:36px;height:36px;object-fit:contain;">
             <?php else: ?>
                 <span class="logo" aria-hidden="true">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -33,7 +49,7 @@ require_once __DIR__ . '/../config/layanan.php';
         <div class="nav-links">
             <a class="active" href="index.php?action=dashboard">🏠 Dashboard</a>
             <a href="index.php?action=pelanggan">👥 Data Pelanggan</a>
-            <a href="index.php?action=logout">🚪 Logout</a>
+            <a href="#" onclick="logoutConfirm(event)">🚪 Logout</a>
         </div>
     </div>
 
@@ -93,10 +109,7 @@ require_once __DIR__ . '/../config/layanan.php';
             <div style="margin-top:24px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <h3 style="margin:0">Layanan IndiBiz</h3>
-                    <div>
-                        <a class="btn" href="index.php?action=pelanggan">Lihat Semua</a>
-                        <a class="btn btn-primary btn-export" href="index.php?action=export">⬇ Export CSV</a>
-                    </div>
+                    
                 </div>
                 <div style="background:#fff; border-radius:8px; padding:12px; border:1px solid #eef2f7;">
                     <table style="width:100%; border-collapse:collapse;">
@@ -134,7 +147,8 @@ require_once __DIR__ . '/../config/layanan.php';
 </footer>
 
 <script>
-function logoutConfirm() {
+function logoutConfirm(e) {
+    if (e && e.preventDefault) e.preventDefault();
     Swal.fire({
         title: 'Logout?',
         text: 'Kamu akan keluar dari sistem!',

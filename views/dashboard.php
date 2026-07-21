@@ -24,8 +24,24 @@ if (!isset($_SESSION['login'])) {
 <div class="page-shell">
     <div class="topbar">
         <div class="brand">
-            <?php if (file_exists(__DIR__ . '/../assets/img/telkom.png')): ?>
-                <img src="assets/img/telkom.png" alt="Telkom" style="width:28px;height:28px;object-fit:contain;">
+            <?php
+            $logo_path = null;
+            $logo_candidates = [
+                __DIR__ . '/../assets/img/telkom.png',
+                __DIR__ . '/../assets/img/logo.png',
+                __DIR__ . '/../assets/img/logo.jpg',
+                __DIR__ . '/../assets/img/logo.jpeg',
+                __DIR__ . '/../assets/img/logo.jfif',
+            ];
+            foreach ($logo_candidates as $candidate) {
+                if (file_exists($candidate)) {
+                    $logo_path = str_replace(__DIR__ . '/../', '', $candidate);
+                    break;
+                }
+            }
+            ?>
+            <?php if ($logo_path): ?>
+                <img src="<?= htmlspecialchars($logo_path); ?>" alt="Telkom" style="width:28px;height:28px;object-fit:contain;">
             <?php else: ?>
                 <span class="logo" aria-hidden="true">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -40,7 +56,7 @@ if (!isset($_SESSION['login'])) {
         <div class="nav-links">
             <a href="index.php?action=dashboard">🏠 Dashboard</a>
             <a class="active" href="index.php?action=pelanggan">👥 Data Pelanggan</a>
-            <a href="index.php?action=logout">🚪 Logout</a>
+            <a href="#" onclick="logoutConfirm(event)">🚪 Logout</a>
         </div>
     </div>
 
@@ -365,7 +381,8 @@ function hapusData(id) {
     });
 }
 
-function logoutConfirm() {
+function logoutConfirm(e) {
+    if (e && e.preventDefault) e.preventDefault();
     Swal.fire({
         title: 'Logout?',
         text: 'Kamu akan keluar dari sistem!',
