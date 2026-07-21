@@ -170,6 +170,15 @@ a {
     background: rgba(211,47,47,0.06);
 }
 
+.btn-export {
+    box-shadow: 0 8px 24px rgba(211,47,47,0.18);
+    border: none;
+}
+
+.btn-export::before {
+    content: '';
+}
+
 .btn:hover {
     transform: translateY(-1px);
 }

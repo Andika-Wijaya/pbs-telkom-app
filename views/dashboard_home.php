@@ -3,6 +3,7 @@ if (!isset($_SESSION['login'])) {
     header("Location: index.php?action=login");
     exit;
 }
+require_once __DIR__ . '/../config/layanan.php';
 ?>
 
 <!DOCTYPE html>
@@ -16,13 +17,17 @@ if (!isset($_SESSION['login'])) {
 <div class="page-shell">
     <div class="topbar">
         <div class="brand">
-            <span class="logo" aria-hidden="true">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="24" height="24" rx="6" fill="#d32f2f"/>
-                    <path d="M6 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 6v12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </span>
+            <?php if (file_exists(__DIR__ . '/../assets/img/telkom.png')): ?>
+                <img src="assets/img/telkom.png" alt="Telkom" style="width:36px;height:36px;object-fit:contain;">
+            <?php else: ?>
+                <span class="logo" aria-hidden="true">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="6" fill="#d32f2f"/>
+                        <path d="M6 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 6v12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            <?php endif; ?>
             Telkom Customer Management
         </div>
         <div class="nav-links">
@@ -87,10 +92,10 @@ if (!isset($_SESSION['login'])) {
             
             <div style="margin-top:24px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <h3 style="margin:0">Pelanggan Terbaru</h3>
+                    <h3 style="margin:0">Layanan IndiBiz</h3>
                     <div>
                         <a class="btn" href="index.php?action=pelanggan">Lihat Semua</a>
-                        <a class="btn btn-outline" href="index.php?action=export">Export CSV</a>
+                        <a class="btn btn-primary btn-export" href="index.php?action=export">⬇ Export CSV</a>
                     </div>
                 </div>
                 <div style="background:#fff; border-radius:8px; padding:12px; border:1px solid #eef2f7;">
@@ -98,25 +103,23 @@ if (!isset($_SESSION['login'])) {
                         <thead>
                             <tr style="text-align:left; color:#334155;">
                                 <th style="padding:8px">No</th>
-                                <th style="padding:8px">Nama</th>
-                                <th style="padding:8px">No Internet</th>
-                                <th style="padding:8px">Layanan</th>
-                                <th style="padding:8px">Status</th>
+                                <th style="padding:8px">Kode</th>
+                                <th style="padding:8px">Nama Layanan</th>
+                                <th style="padding:8px">Harga</th>
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if (!empty($recent)): ?>
-                            <?php $i=1; foreach($recent as $r): ?>
+                        <?php if (!empty($layananList)): ?>
+                            <?php $i=1; foreach($layananList as $l): ?>
                             <tr>
                                 <td style="padding:8px"><?= $i++; ?></td>
-                                <td style="padding:8px"><?= htmlspecialchars($r['nama']); ?></td>
-                                <td style="padding:8px"><?= htmlspecialchars($r['no_internet']); ?></td>
-                                <td style="padding:8px"><?= htmlspecialchars($r['layanan']); ?></td>
-                                <td style="padding:8px"><?= htmlspecialchars($r['status']); ?></td>
+                                <td style="padding:8px"><?= htmlspecialchars($l['kode']); ?></td>
+                                <td style="padding:8px"><?= htmlspecialchars($l['nama']); ?></td>
+                                <td style="padding:8px">Rp <?= number_format($l['harga']); ?></td>
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <tr><td colspan="5" style="padding:12px; color:#64748b;">Belum ada pelanggan.</td></tr>
+                            <tr><td colspan="4" style="padding:12px; color:#64748b;">Belum ada layanan.</td></tr>
                         <?php endif; ?>
                         </tbody>
                     </table>

@@ -24,13 +24,17 @@ if (!isset($_SESSION['login'])) {
 <div class="page-shell">
     <div class="topbar">
         <div class="brand">
-            <span class="logo" aria-hidden="true">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="24" height="24" rx="6" fill="#d32f2f"/>
-                    <path d="M6 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 6v12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </span>
+            <?php if (file_exists(__DIR__ . '/../assets/img/telkom.png')): ?>
+                <img src="assets/img/telkom.png" alt="Telkom" style="width:28px;height:28px;object-fit:contain;">
+            <?php else: ?>
+                <span class="logo" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="6" fill="#d32f2f"/>
+                        <path d="M6 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 6v12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+            <?php endif; ?>
             Telkom Customer Management
         </div>
         <div class="nav-links">
@@ -57,7 +61,7 @@ if (!isset($_SESSION['login'])) {
                 </div>
                 <div style="display:flex; gap:8px; align-items:center;">
                     <button class="btn btn-primary" onclick="openTambah()">+ Tambah Pelanggan</button>
-                    <a class="btn btn-outline" href="index.php?action=export">Export CSV</a>
+                    <a class="btn btn-primary btn-export" href="index.php?action=export">⬇ Export CSV</a>
                 </div>
             </div>
 
