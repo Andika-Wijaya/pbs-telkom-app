@@ -19,7 +19,7 @@ if (!isset($_SESSION['login'])) {
         <div class="nav-links">
             <a class="active" href="index.php?action=dashboard">🏠 Dashboard</a>
             <a href="index.php?action=pelanggan">👥 Data Pelanggan</a>
-            <a href="#" onclick="logoutConfirm()">🚪 Logout</a>
+            <a href="index.php?action=logout">🚪 Logout</a>
         </div>
     </div>
 
@@ -71,9 +71,51 @@ if (!isset($_SESSION['login'])) {
                     Gunakan menu <b>Data Pelanggan</b> untuk menambah, mengedit, dan menghapus data pelanggan dengan lebih nyaman.
                 </p>
             </div>
+            
+            <div style="margin-top:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h3 style="margin:0">Pelanggan Terbaru</h3>
+                    <div>
+                        <a class="btn" href="index.php?action=pelanggan">Lihat Semua</a>
+                        <a class="btn btn-outline" href="index.php?action=export">Export CSV</a>
+                    </div>
+                </div>
+                <div style="background:#fff; border-radius:8px; padding:12px; border:1px solid #eef2f7;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="text-align:left; color:#334155;">
+                                <th style="padding:8px">No</th>
+                                <th style="padding:8px">Nama</th>
+                                <th style="padding:8px">No Internet</th>
+                                <th style="padding:8px">Layanan</th>
+                                <th style="padding:8px">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php if (!empty($recent)): ?>
+                            <?php $i=1; foreach($recent as $r): ?>
+                            <tr>
+                                <td style="padding:8px"><?= $i++; ?></td>
+                                <td style="padding:8px"><?= htmlspecialchars($r['nama']); ?></td>
+                                <td style="padding:8px"><?= htmlspecialchars($r['no_internet']); ?></td>
+                                <td style="padding:8px"><?= htmlspecialchars($r['layanan']); ?></td>
+                                <td style="padding:8px"><?= htmlspecialchars($r['status']); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr><td colspan="5" style="padding:12px; color:#64748b;">Belum ada pelanggan.</td></tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<footer style="margin-top:24px; text-align:center; color:#94a3b8; padding:18px 0;">
+    &copy; <?= date('Y'); ?> Telkom Customer Management — dibuat dengan PHP
+</footer>
 
 <script>
 function logoutConfirm() {
@@ -86,7 +128,7 @@ function logoutConfirm() {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'controllers/logout.php';
+            window.location.href = 'index.php?action=logout';
         }
     });
 }

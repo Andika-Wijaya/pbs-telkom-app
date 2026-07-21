@@ -175,8 +175,48 @@ class PelangganController {
     }
 
     public function logout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        session_unset();
         session_destroy();
         header("Location: index.php?action=login");
+        exit;
+    }
+
+    public function exportCsv() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['login'])) {
+            header('HTTP/1.1 403 Forbidden');
+            echo 'Forbidden';
+            exit;
+        }
+
+        $data = $this->getAll();
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=pelanggan_export_' . date('Ymd_His') . '.csv');
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['ID','No Internet','Nama','No Tlp','Layanan','Harga','Tagihan','Status']);
+
+        foreach ($data as $row) {
+            fputcsv($output, [
+                $row['id'],
+                $row['no_internet'],
+                $row['nama'],
+                $row['no_tlp'],
+                $row['layanan'],
+                $row['harga'],
+                $row['tagihan'],
+                $row['status']
+            ]);
+        }
+
+        fclose($output);
         exit;
     }
 }

@@ -15,6 +15,8 @@ switch($action){
         $stats = $controller->getStats();
         $total = $stats['total'];
         $aktif = $stats['aktif'];
+        // ambil 5 data pelanggan terbaru untuk ringkasan
+        $recent = array_slice($controller->getAll(), 0, 5);
         require 'views/dashboard_home.php';
     break;
 
@@ -53,6 +55,10 @@ switch($action){
 
     case 'logout':
         $controller->logout();
+    break;
+
+    case 'export':
+        $controller->exportCsv();
     break;
 
     default:

@@ -58,8 +58,6 @@ unset($_SESSION['error']);
             </div>
             <button class="btn btn-primary" type="submit" name="login">Login</button>
         </form>
-
-        <p style="margin-top: 14px; font-size: 0.9rem; color: #64748b;">Default login: <b>admin / admin123</b></p>
     </div>
 </div>
 </body>

@@ -27,7 +27,7 @@ if (!isset($_SESSION['login'])) {
         <div class="nav-links">
             <a href="index.php?action=dashboard">🏠 Dashboard</a>
             <a class="active" href="index.php?action=pelanggan">👥 Data Pelanggan</a>
-            <a href="#" onclick="logoutConfirm()">🚪 Logout</a>
+            <a href="index.php?action=logout">🚪 Logout</a>
         </div>
     </div>
 
@@ -46,7 +46,10 @@ if (!isset($_SESSION['login'])) {
                 <div class="search-box">
                     <input type="text" id="search" placeholder="Cari nama atau No Internet...">
                 </div>
-                <button class="btn btn-primary" onclick="openTambah()">+ Tambah Pelanggan</button>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn btn-primary" onclick="openTambah()">+ Tambah Pelanggan</button>
+                    <a class="btn btn-outline" href="index.php?action=export">Export CSV</a>
+                </div>
             </div>
 
             <div class="table-wrap">
@@ -359,7 +362,7 @@ function logoutConfirm() {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'controllers/logout.php';
+            window.location.href = 'index.php?action=logout';
         }
     });
 }
