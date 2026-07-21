@@ -44,6 +44,9 @@ a {
     letter-spacing: 0.02em;
 }
 
+.brand { display:flex; align-items:center; gap:10px; }
+.brand .logo { display:inline-flex; width:36px; height:36px; align-items:center; justify-content:center; }
+
 .nav-links {
     display: flex;
     gap: 8px;
@@ -155,6 +158,16 @@ a {
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn.btn-outline {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn.btn-outline:hover {
+    background: rgba(211,47,47,0.06);
 }
 
 .btn:hover {

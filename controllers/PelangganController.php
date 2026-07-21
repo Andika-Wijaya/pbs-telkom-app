@@ -162,15 +162,32 @@ class PelangganController {
 
     public function getStats() {
         if (!$this->conn) {
-            return ['total' => 0, 'aktif' => 0];
+            return ['total' => 0, 'aktif' => 0, 'today' => 0];
         }
 
         $total = $this->conn->query("SELECT COUNT(*) FROM pelanggan")->fetchColumn();
         $aktif = $this->conn->query("SELECT COUNT(*) FROM pelanggan WHERE status='aktif'")->fetchColumn();
 
+        // Hitung pelanggan baru hari ini — coba beberapa nama kolom yang umum
+        $today = 0;
+        $possibleDateCols = ['created_at','created','tanggal','tgl','tgl_daftar','date_created'];
+        foreach ($possibleDateCols as $col) {
+            try {
+                $stmt = $this->conn->query("SELECT COUNT(*) FROM pelanggan WHERE DATE($col) = CURDATE()");
+                if ($stmt !== false) {
+                    $today = (int) $stmt->fetchColumn();
+                    break;
+                }
+            } catch (Exception $e) {
+                // kolom tidak ada atau query gagal — coba kolom lain
+                continue;
+            }
+        }
+
         return [
             'total' => $total,
-            'aktif' => $aktif
+            'aktif' => $aktif,
+            'today' => $today
         ];
     }
 

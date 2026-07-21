@@ -23,7 +23,16 @@ if (!isset($_SESSION['login'])) {
 <body>
 <div class="page-shell">
     <div class="topbar">
-        <div class="brand">Telkom Customer Management</div>
+        <div class="brand">
+            <span class="logo" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="24" rx="6" fill="#d32f2f"/>
+                    <path d="M6 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6v12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            Telkom Customer Management
+        </div>
         <div class="nav-links">
             <a href="index.php?action=dashboard">🏠 Dashboard</a>
             <a class="active" href="index.php?action=pelanggan">👥 Data Pelanggan</a>
@@ -459,6 +468,10 @@ document.addEventListener('change', function(e) {
     }
 });
 </script>
+
+<footer style="margin-top:24px; text-align:center; color:#94a3b8; padding:18px 0;">
+    &copy; <?= date('Y'); ?> Telkom Customer Management — dibuat dengan PHP
+</footer>
 
 </body>
 </html>

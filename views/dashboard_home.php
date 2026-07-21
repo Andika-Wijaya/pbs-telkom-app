@@ -15,7 +15,16 @@ if (!isset($_SESSION['login'])) {
 <body>
 <div class="page-shell">
     <div class="topbar">
-        <div class="brand">Telkom Customer Management</div>
+        <div class="brand">
+            <span class="logo" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="24" rx="6" fill="#d32f2f"/>
+                    <path d="M6 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6v12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            Telkom Customer Management
+        </div>
         <div class="nav-links">
             <a class="active" href="index.php?action=dashboard">🏠 Dashboard</a>
             <a href="index.php?action=pelanggan">👥 Data Pelanggan</a>
@@ -62,6 +71,10 @@ if (!isset($_SESSION['login'])) {
                 <div class="card" style="padding: 20px; border: 1px solid #f1f5f9; border-radius: 16px;">
                     <h2 style="margin: 0; font-size: 32px; color: #2563eb;"><?= $aktif; ?></h2>
                     <p style="margin: 8px 0 0; color: #64748b;">Pelanggan Aktif</p>
+                </div>
+                <div class="card" style="padding: 20px; border: 1px solid #f1f5f9; border-radius: 16px;">
+                    <h2 style="margin: 0; font-size: 32px; color: #16a34a;"><?= $today_new ?? 0; ?></h2>
+                    <p style="margin: 8px 0 0; color: #64748b;">Pelanggan Baru Hari Ini</p>
                 </div>
             </div>
 
